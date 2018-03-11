@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet" />
+        <script src="https://unpkg.com/vue@2.5.13/dist/vue.js"></script>
+        <script src="https://unpkg.com/vue-resource@1.3.5/dist/vue-resource.min.js"></script>
+        <style>
+            #container {
+                margin: 0 auto;
+                max-width: 400px;
+                border: 1px solid #3f3f3f;
+                overflow: hidden;
+            }
+            .task.active {
+                transition: 0.5s;
+                margin-left: -10%!important;
+            }
+            .task {
+                transition: 0.5s;
+                overflow: hidden;
+                line-height: 2em;
+                display: table;
+                width: 110%;
+                border-top: 1px solid #5f5f5f;
+            }
+            .title {
+                width: 100%;
+                padding-left: 1em;
+                display: table-cell;
+                color: #3f3f3f;
+            }
+            .context {
+                width: 10%;
+                background-color: #d83e2b;
+                color: #fff;
+                padding-left: 0.5em;
+                padding-right: 0.5em;
+                text-align: center;
+                display: table-cell;
+            }
+            #snackbar {
+                visibility: hidden;
+                min-width: 250px;
+                margin-left: -125px;
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                border-radius: 2px;
+                padding: 16px;
+                position: fixed;
+                left: 50%;
+                bottom: 30px;
+            }
+            #snackbar.show {
+                visibility: visible;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            }
+
+            @keyframes fadein {
+                from {
+                    bottom: 0;
+                    opacity: 0;
+                }
+                to {
+                    bottom: 30px;
+                    opacity: 1;
+                }
+            }
+            @keyframes fadeout {
+                from {
+                    bottom: 30px;
+                    opacity: 1;
+                }
+                to {
+                    bottom: 0;
+                    opacity: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div class="input-container">
+                <input type="text" placeholder="Add a new task!" v-model="taskName"/>
+                <button v-on:click="addTask">Add</button>
+            </div>
+            <div id="tasks">
+                <div v-for="(task,index) in tasks"
+                    v-bind:class="{ active : isActive(index), task : true }">
+                    <div class="title" v-on:click="select(index)">
+                        {{task.name}}
+                    </div>
+                    <div class="context">
+                        <i v-on:click="deleteTask(index,task.id)" class="fas fa-trash-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <snackbar :notification="message"></snackbar>
+        </div>
+        <script>
+
+            Vue.component('snackbar', {
+                props : [
+                    "notification"
+                ],
+                template : '<div id="snackbar" v-bind:class="{ show : notification != null}">{{notification}}</div>',
+            });
+
+            new Vue({
+                el : "#container",
+                methods: {
+                    isActive : function(index) {
+                        return this.selected === index;
+                    },
+                    select : function(index) {
+                        if (this.isActive(index)) {
+                            this.selected = -1;
+                        } else {
+                            this.selected = index;
+                        }
+                    },
+                    deleteTask : function(index,id) {
+                        this.$http.delete("/tasks/" + id).then(function() {
+                            this.tasks.splice(index,1);
+                            this.selected = -1;
+                            this.$emit('message', "Deleted!")
+                        }).catch(this.httpError);
+                    },
+                    httpError : function() {
+                        this.$emit('message', "Error during the request!");
+                    },
+                    addTask : function() { 
+                         if (this.taskName) { 
+                            var task = { name : this.taskName }; 
+                            this.$http.post("/tasks/", task).then(function(response) {
+                                this.tasks.push(response.data); 
+                                this.$emit('message', "Created!")
+                            }).catch(this.httpError);
+                         }
+                         this.taskName = "";
+                    },
+                    showMessage : function(message) {
+                        var vm = this;
+                        vm.message = message;
+                        setTimeout(function() {
+                            vm.message = null;
+                        }, 3000);
+                    }
+                },
+                created : function() {
+                    this.$http.get("/tasks/").then(function(response) {
+                        this.tasks = response.data;
+                    })
+                    this.$on('message', this.showMessage);
+                },
+                data : {
+                    selected : -1,
+                    taskName : "",
+                    tasks : [],
+                    message: null
+                }
+            });
+        </script>
+    </body>
+</html>
