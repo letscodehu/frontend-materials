@@ -84,30 +84,18 @@
                 <input type="text" placeholder="Add a new task!" v-model="taskName"/>
                 <button v-on:click="addTask">Add</button>
             </div>
-            <div id="tasks">
-                <div v-for="(task,index) in tasks"
-                    v-bind:class="{ active : isActive(index), task : true }">
-                    <div class="title" v-on:click="select(index)">
-                        {{task.name}}
-                    </div>
-                    <div class="context">
-                        <i v-on:click="deleteTask(index,task.id)" class="fas fa-trash-alt"></i>
-                    </div>
-                </div>
-            </div>
+            <list id="tasks" :items="tasks" v-on:delete="deleteTask"></list>
+            <list id="tasks_2" :items="tasks"></list>
             <snackbar :notification="message"></snackbar>
         </div>
         <script>
 
-            Vue.component('snackbar', {
-                props : [
-                    "notification"
-                ],
-                template : '<div id="snackbar" v-bind:class="{ show : notification != null}">{{notification}}</div>',
-            });
-
-            new Vue({
-                el : "#container",
+            Vue.component('list', {
+                props: ["items"],
+                template: '<div><list-item v-for="(item,index) in items" :key="item.id"' +
+                    'v-on:select="select" v-on:delete="deleteItem"' +
+                    ':item="item" :index="index" :active="isActive(index)">' +
+                '</list-item></div>',
                 methods: {
                     isActive : function(index) {
                         return this.selected === index;
@@ -119,6 +107,48 @@
                             this.selected = index;
                         }
                     },
+                    deleteItem : function(item, id) {
+                        this.selected = -1;
+                        this.$emit('delete', item, id);
+                    }
+                }, 
+                data: function() {
+                    return {
+                        selected : -1,
+                    }
+                }
+            });
+
+            Vue.component('list-item', {
+                props: ["index", "item", "active"],
+                template : '<div v-bind:class="{ active : active, task : true }">' +
+                    '<div class="title" v-on:click="select(index)">' +
+                        '{{item.name}}' +
+                    '</div>' +
+                    '<div class="context">' +
+                        '<i v-on:click="deleteItem(index,item.id)" class="fas fa-trash-alt"></i>' +
+                    '</div>' +
+                '</div>',
+                methods : {
+                    select : function(index) {
+                        this.$emit('select', index);
+                    },
+                    deleteItem : function(index,id) {
+                        this.$emit('delete', index, id);
+                    }
+                }
+            });
+
+            Vue.component('snackbar', {
+                props : [
+                    "notification"
+                ],
+                template : '<div id="snackbar" v-bind:class="{ show : notification != null}">{{notification}}</div>',
+            });
+
+            new Vue({
+                el : "#container",
+                methods: {
                     deleteTask : function(index,id) {
                         this.$http.delete("/tasks/" + id).then(function() {
                             this.tasks.splice(index,1);
@@ -154,7 +184,6 @@
                     this.$on('message', this.showMessage);
                 },
                 data : {
-                    selected : -1,
                     taskName : "",
                     tasks : [],
                     message: null
