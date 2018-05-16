@@ -1,16 +1,12 @@
 {
   "tasks": [
     {
-      "name": "Be awesome",
-      "id": 4
-    },
-    {
-      "name": "Learn Vue.js",
+      "name": "Grow a beard",
       "id": 5
     },
     {
-      "name": "aaaaa",
-      "id": 6
+      "name": "42342",
+      "id": 8
     }
   ]
 }

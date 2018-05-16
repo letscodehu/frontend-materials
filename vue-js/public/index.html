@@ -85,7 +85,6 @@
                 <button v-on:click="addTask">Add</button>
             </div>
             <list id="tasks" :items="tasks" v-on:delete="deleteTask"></list>
-            <list id="tasks_2" :items="tasks"></list>
             <snackbar :notification="message"></snackbar>
         </div>
         <script>
@@ -107,14 +106,14 @@
                             this.selected = index;
                         }
                     },
-                    deleteItem : function(item, id) {
+                    deleteItem : function(index,id) {
                         this.selected = -1;
-                        this.$emit('delete', item, id);
+                        this.$emit('delete', index, id);
                     }
-                }, 
+                },
                 data: function() {
                     return {
-                        selected : -1,
+                        selected : -1
                     }
                 }
             });
@@ -152,7 +151,6 @@
                     deleteTask : function(index,id) {
                         this.$http.delete("/tasks/" + id).then(function() {
                             this.tasks.splice(index,1);
-                            this.selected = -1;
                             this.$emit('message', "Deleted!")
                         }).catch(this.httpError);
                     },
@@ -186,6 +184,16 @@
                 data : {
                     taskName : "",
                     tasks : [],
+                    otherTasks : [
+                        {
+                            "id" : 1,
+                            "name" : "Other"
+                        },
+                        {
+                            "id" : 2,
+                            "name" : "List"
+                        }
+                    ],
                     message: null
                 }
             });
