@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "watch": "npm-watch",
-    "test": "mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.spec.js"
+    "test": "mocha-webpack --webpack-config webpack.config.js --require test/setup.js *.spec.js --recursive test"
   },
   "dependencies": {
     "cross-env": "^5.1.4",

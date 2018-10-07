@@ -1,11 +1,11 @@
-import App from '../../src/App.vue'
+import SingleTodoList from '../../../src/components/routes/SingleTodoList.vue'
 import {shallow} from '@vue/test-utils'
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import VueResourceMock from 'vue-resource-mock'
 import sinon from 'sinon'
 
-describe('App.vue', () => {
+describe('SingleTodoList.vue', () => {
 
     let wrapper, mockItem;
 
@@ -45,7 +45,16 @@ describe('App.vue', () => {
     }) 
 
     beforeEach((done) => {
-        wrapper = shallow(App)
+        const $route = {
+            params: {
+                id : 5
+            }
+        }
+        wrapper = shallow(SingleTodoList, {
+            mocks : {
+                $route
+            }
+        })
         setTimeout(done, 1)
     })
 
