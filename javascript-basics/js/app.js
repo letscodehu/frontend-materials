@@ -1,17 +1,16 @@
 var dateTimeHolder = document.getElementById('datetime');
-var balanceHolder = document.getElementById('balance');
 var amountHolder = document.getElementById('amount');
 var storeButton = document.getElementById('store');
 var saveButton = document.getElementById('save');
-var transactionsListContainer = document.getElementById("transactions");
-var transactionRowTemplate = document.querySelector('.transactions-row-template');
+var list = transactionList();
 var showToast = toasts(2000).showToast;
 var transactionStore = storage();
 
-
 transactionStore.getTransactions().forEach(function(transaction, index) {
-    insertTransactionRow(transaction.amount, transaction.date, index);
+    list.insertTransactionRow(transaction.amount, transaction.date, index, onDeleteTransactionRow);
 });
+
+list.setBalance(calculateBalance() + " Ft");
 
 function saveTransactions() {
     transactionStore.save();
@@ -27,31 +26,21 @@ storeButton.addEventListener('click', function addAmount() {
         var amount = parseInt(amountHolder.value);
         var date = new Date(dateTimeHolder.value);
         transactionStore.add(amount, date);
-        insertTransactionRow(amount, date, transactions.length - 1);
+        list.insertTransactionRow(amount, date, transactionStore.getNumberOfTransactions() - 1, onDeleteTransactionRow);
+        list.setBalance(calculateBalance() + " Ft");
         amountHolder.value = '';
         dateTimeHolder.value = '';
     }
 })
 
-
-function insertTransactionRow(amount, date, index) {
-    var listItem = transactionRowTemplate.cloneNode(true);
-    listItem.querySelector('.transaction-id').textContent = index;
-    listItem.querySelector('.transaction-date').textContent = date.toDateString();
-    listItem.querySelector('.transaction-amount').textContent = amount + " Ft";
-    var deleteButton = listItem.querySelector('.delete-transaction');
-    deleteButton.setAttribute('data-id', index);
-    deleteButton.addEventListener('click', deleteTransactionRow);
-    transactionsListContainer.appendChild(listItem);
-    balanceHolder.textContent = calculateBalance();
-}
-
-function deleteTransactionRow(event) {
-    var id = event.target.getAttribute('data-id');
-    transactionStore.remove(id);
-    var row = event.target.parentNode.parentNode;
-    row.parentNode.removeChild(row);
-    balanceHolder.textContent = calculateBalance();
+function onDeleteTransactionRow(event, index) {
+    if (calculateBalance() < 100000) {
+        list.deleteTransactionRow(event);
+        transactionStore.remove(index);
+        list.setBalance(calculateBalance() + " Ft");
+    } else {
+        showToast("Túl sok pénzed van, ne költsd el!");
+    }
 }
 
 function isTransactionValid(amountHolder, dateTimeHolder) {
@@ -87,8 +76,9 @@ function validateAmount(amountHolder) {
 
 function calculateBalance() {
     var balance = 0;
+    var transactions = transactionStore.getTransactions();
     for(var i = 0; i < transactions.length; i++) {
         balance += transactions[i].amount;
     }
-    return balance + " Ft"; 
+    return balance; 
 }

@@ -21,6 +21,10 @@ function storage() {
         });
     }
 
+    function getNumberOfTransactions() {
+        return transactions.length;
+    }
+
     function remove(index) {
         transactions.splice(index, 1);
     }
@@ -39,6 +43,7 @@ function storage() {
     return {
         save : save,
         add : add,
+        getNumberOfTransactions : getNumberOfTransactions,
         getTransactions : getTransactions,
         remove : remove
     }
