@@ -1,11 +1,6 @@
 {
   "tasks": [
     {
-      "name": "Grow a beard",
-      "id": 5,
-      "listId": "valami"
-    },
-    {
       "name": "Masik lista",
       "id": 9,
       "listId": "valami2"
@@ -21,16 +16,40 @@
     {
       "name": "fail",
       "id": 12
+    },
+    {
+      "name": "2342342",
+      "id": 13
+    },
+    {
+      "name": "4342343",
+      "id": 14
+    },
+    {
+      "name": "3424",
+      "id": 15
+    },
+    {
+      "name": "423424",
+      "id": 16
+    },
+    {
+      "name": "valami",
+      "id": 17
+    },
+    {
+      "name": "valami más",
+      "id": 18
     }
   ],
   "lists": [
     {
       "id": "valami",
-      "name" : "Tennivalók"
+      "name": "Tennivalók"
     },
     {
       "id": "valami2",
-      "name" : "Nyaralásra"
+      "name": "Nyaralásra"
     }
   ]
 }
