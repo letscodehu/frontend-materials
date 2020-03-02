@@ -1,28 +1,25 @@
-let w;
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+        .then(function(registration) {
+            console.log("Success with scope: " + registration.scope);
 
-function start() {
-    if (typeof(Worker) !== 'undefined') {
-        if (typeof(w) == 'undefined') {
-            w = new Worker("worker.js");
-        }
-        w.onmessage = function(event) {
-            document.getElementById("result").innerHTML = event.data;
-        }
-    } else {
-        document.getElementById("result").innerHTML = "Sorry, no web worker support!";
-    }
-}
+            document.getElementById('clear').addEventListener('click', event => {
+                navigator.serviceWorker.controller.postMessage('clear');
+            });
 
-function stop() {
-    w.terminate();
-    w = undefined;
-}
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data === 'deleted') {
+                    document.getElementById('message').textContent = 'Cache purged';
+                }
+            })
 
+        }, function(err) {
+            console.log("Error: " + err);
+        })
+    });
 
-function calculate() {
-    if (typeof(w) == 'undefined') {
-        document.getElementById("result").innerHTML = "Sorry, web worker is not running.";    
-    } else {
-        w.postMessage(parseInt(document.getElementById("number").value));
-    }
+    fetch('/something.json')
+    .then(response => response.json())
+    .then(r => console.log(r));
 }
