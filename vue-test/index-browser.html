@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <title>vue-spotlight</title>
+    </head>
+    <body>
+        <div id="app">
+            <Spotlight/>
+        </div>
+    </body>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="node_modules/vue-spotlight/dist/vue-spotlight.min.js"></script>
+    <script>
+        Vue.use(Spotlight);
+        new Vue({
+            el: "#app"
+        });
+    </script>
+</html>
