@@ -1,20 +1,184 @@
 <template>
-  <div>Spotlight
-  </div>
+    <div class="overlay">
+        <div class="search-bar">
+            <div class="search-icon">
+                <font-awesome-icon icon="search" size="2x"/>
+            </div>
+            <input v-on:input="update" type="text" class="search-input" spellcheck="false" placeholder="Spotlight Search" autofocus v-model="term" />
+            <span class="autocomplete">{{suggestion}}</span>
+        </div>
+        <div class="hits" v-bind:class="{open : open}">
+            <ul>
+                <li v-for="(item,index) in filtered" class="hit-result" v-bind:key="item.title" v-bind:selected="{selected: selected(index)}">
+                    <img class="hit-result-image" v-bind:src="item.image"/>
+                    <span>{{item.title}}</span>
+                </li>
+            </ul>
+        </div>
+
+    </div>
 </template>
 
 <script>
+import {library} from "@fortawesome/fontawesome-svg-core"
+import {faSearch} from "@fortawesome/free-solid-svg-icons"
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+
+library.add(faSearch);
+
 export default {
-    name : 'Spotlight',
-    mounted() {
-        console.log("mounted");
+    name: "Spotlight",
+    data() {
+        return {
+            "term": "",
+            "selectedIndex" : -1,
+            "suggestion": "",
+            "result": [],
+            "filtered" : []
+        }
+    },
+    methods: {
+        update() {
+            this.result = [
+                {
+                    "title" : "PHP alapok"
+                },
+                {
+                    "title" : "PHP OOP alapok"
+                },
+                {
+                    "title" : "PHP tervezési minták"
+                }
+            ]
+            this.filtered = this.result.filter(elem => elem.title.startsWith(this.term));
+            if (this.open() && this.term !== '') {
+                this.suggestion = this.filtered[0].title;
+            } else {
+                this.suggestion = ""
+            }
+        },
+        selected(index) {
+            return this.selectedIndex === index;
+        },
+        open() {
+            return this.filtered.length > 0;
+        }
+    },
+    components: {
+        FontAwesomeIcon
     }
-}
+};
 </script>
 
 <style>
-    body {
-        background-color: black;
-        color: #fff;
-    }
+.overlay {
+    top: 20%;
+    left: 50%;
+    width: 680px;
+    z-index: 100;
+    font-size: 12px;
+    overflow: hidden;
+    border-radius: 6px;
+    position: absolute;
+    margin-left: -340px;
+    letter-spacing: .3px;
+    font-family: Verdana, "Lucida Sans Unicode", sans-serif;
+    box-shadow: 0 12px 15px 0 rgba(0,0,0,0.24),
+    0 17px 50px 0 rgba(0,0,0,0.19);
+}
+.search-bar {
+    z-index: 10;
+    height: 55px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    position: relative;
+    background-color: rgba(0,21,41,0.918);
+}
+.search-icon {
+    width: 22px;
+    height: 22px;
+    margin: 16px;
+    position: static;
+    background-size: cover;
+}
+.search-icon > svg {
+    color: #a6a6a6;
+}
+.search-input {
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    font-size: 22px;
+    height: 55px;
+    font-weight: 300;
+    padding-left: 5px;
+    box-sizing: content-box;
+    border: none!important;
+    outline: none!important;
+    max-width: 450px!important;
+    background-color: transparent;
+    z-index: 900;
+    font-family: sans-serif;
+    letter-spacing: .3px;
+}
+.search-input::-moz-placeholder {
+    color: #a6a6a6;
+}
+.search-input::-webkit-input-placeholder {
+    color: #a6a6a6;
+}
+.autocomplete {
+    height: 55px;
+    position: absolute;
+    top: 14px;
+    left: 60px;
+    margin: 0;
+    padding: 0;
+    color: #a6a6a6;
+    font-size: 22px;
+    font-weight: 300;
+    font-family: sans-serif;
+    letter-spacing: .3px;
+}
+.hits {
+    max-height: 0;
+    min-height: 0;
+    transition: all 0.3s;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style:none;
+}
+.hits::-webkit-scrollbar {
+    display: none;
+}
+.hits.open {
+    max-height: 190px;
+    border-top: 1px solid #515253
+}
+ul,li {
+    margin:0;
+    padding: 0;
+    width: 100%;
+    list-style-type: none;
+}
+.hit-result {
+    color: #fff;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 100;
+    background-color: rgba(0,21,41,0.918);
+    padding: 6px 6px 6px 0 !important;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+.hit-result.selected {
+    background-color: #0093f8;
+}
+.hit-result-image {
+    padding: 0 10px 0 10px;
+}
+
 </style>

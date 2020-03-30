@@ -4,8 +4,8 @@ export function install(Vue) {
     if (install.installed) return;
     install.installed = true;
     Vue.component('Spotlight', Spotlight);
-}
-
+} 
+ 
 const plugin = {
     install
 };
