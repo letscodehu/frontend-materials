@@ -4,7 +4,7 @@
     </head>
     <body>
         <div id="app">
-            <Spotlight v-show="open"/>
+            <Spotlight field-name="symbol" :data-provider="dataProvider" :match-renderer="matchRenderer"/>
         </div>
     </body>
     <script src="main.js"></script>

@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start" : "webpack-dev-server",
+    "start": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Papp Krisztián <fejlesztes@letscode.hu> (https://www.letscode.hu/)",
   "license": "MIT",
   "dependencies": {
+    "json-server": "^0.16.1",
     "vue": "^2.6.11",
     "vue-spotlight": "file:../vue-spotlight"
   },

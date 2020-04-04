@@ -1,21 +1,18 @@
 <template>
-    <div class="overlay">
+        <div class="overlay">
         <div class="search-bar">
-            <div class="search-icon">
-                <font-awesome-icon icon="search" size="2x"/>
-            </div>
-            <input v-on:input="update" type="text" class="search-input" spellcheck="false" placeholder="Spotlight Search" autofocus v-model="term" />
-            <span class="autocomplete">{{suggestion}}</span>
+        <div class="search-icon">
+            <font-awesome-icon icon="search" size="2x" />
+        </div>
+        <input @input="update" type="text" class="search-input" spellcheck="false" placeholder="Spotlight Search" autofocus v-model="term" />
+        <span class="autocomplete">{{suggestion}}</span>
         </div>
         <div class="hits" v-bind:class="{open : open}">
-            <ul>
-                <li v-for="(item,index) in filtered" class="hit-result" v-bind:key="item.title" v-bind:selected="{selected: selected(index)}">
-                    <img class="hit-result-image" v-bind:src="item.image"/>
-                    <span>{{item.title}}</span>
-                </li>
+        <ul>
+            <li v-for="(item, index) in filtered" v-bind:key="item[fieldName]" class="hit-result" v-bind:class="{selected : selected(index)}"
+                v-html="matchRenderer(item, fieldName)"></li>
             </ul>
         </div>
-
     </div>
 </template>
 
@@ -28,40 +25,54 @@ library.add(faSearch);
 
 export default {
     name: "Spotlight",
+    props: {
+        fieldName : {
+            type: String,
+            default : "title"
+        },
+        matchRenderer : {
+            type: Function,
+            default: (item, fieldName) => {
+                return `<img class="hit-result-image" v-bind:src="${item.image}"/><span>${item[fieldName]}</span>`
+            }
+        },
+        comparingFunction : {
+            type: Function,
+            default : (field, term) => {
+                return field.startsWith(term)
+            }
+        },
+        dataProvider : {
+            type: Function,
+            required: true
+        }
+    },
     data() {
         return {
-            "term": "",
-            "selectedIndex" : -1,
-            "suggestion": "",
-            "result": [],
-            "filtered" : []
+            term : "",
+            selectedIndex : -1,
+            suggestion: "",
+            filtered: [],
+            result: []
         }
     },
     methods: {
-        update() {
-            this.result = [
-                {
-                    "title" : "PHP alapok"
-                },
-                {
-                    "title" : "PHP OOP alapok"
-                },
-                {
-                    "title" : "PHP tervezési minták"
-                }
-            ]
-            this.filtered = this.result.filter(elem => elem.title.startsWith(this.term));
-            if (this.open() && this.term !== '') {
-                this.suggestion = this.filtered[0].title;
-            } else {
-                this.suggestion = ""
-            }
+        open() {
+            return this.filtered.length > 0
         },
         selected(index) {
             return this.selectedIndex === index;
         },
-        open() {
-            return this.filtered.length > 0;
+        update() {
+            this.dataProvider(this.term).then(data => this.result = data)
+            .then(() => this.filtered = this.result.filter(elem => this.comparingFunction(elem[this.fieldName], this.term)))
+            .then(() => {
+                if (this.open() && this.term !== '') {
+                    this.suggestion = this.filtered[0][this.fieldName];
+                } else {
+                    this.suggestion = "";
+                }
+            })
         }
     },
     components: {
