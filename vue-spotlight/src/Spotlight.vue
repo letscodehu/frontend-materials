@@ -1,5 +1,10 @@
 <template>
-        <div class="overlay">
+        <div class="overlay" v-show="widgetOpen">
+        <global-events v-if="widgetOpen && open()"
+        @keyup.up="up"
+        @keyup.down="down"
+        @keyup.tab="complete"
+        @keyup.enter="select" />
         <div class="search-bar">
         <div class="search-icon">
             <font-awesome-icon icon="search" size="2x" />
@@ -20,33 +25,11 @@
 import {library} from "@fortawesome/fontawesome-svg-core"
 import {faSearch} from "@fortawesome/free-solid-svg-icons"
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
-
+import GlobalEvents from 'vue-global-events'
 library.add(faSearch);
 
 export default {
     name: "Spotlight",
-    props: {
-        fieldName : {
-            type: String,
-            default : "title"
-        },
-        matchRenderer : {
-            type: Function,
-            default: (item, fieldName) => {
-                return `<img class="hit-result-image" v-bind:src="${item.image}"/><span>${item[fieldName]}</span>`
-            }
-        },
-        comparingFunction : {
-            type: Function,
-            default : (field, term) => {
-                return field.startsWith(term)
-            }
-        },
-        dataProvider : {
-            type: Function,
-            required: true
-        }
-    },
     data() {
         return {
             term : "",
@@ -56,27 +39,78 @@ export default {
             result: []
         }
     },
+    props : {
+        action : {
+            type: Function,
+            required: true
+        },
+        widgetOpen : {
+            type: Boolean,
+            required: true
+        },
+        fieldName : {
+            type: String,
+            default : "title"
+        },
+        comparingFunction : {
+            type: Function,
+            default : (field, term) => {
+                return field.startsWith(term);
+            }
+        },
+        dataProvider : {
+            type : Function,
+            required : true
+        },
+        matchRenderer: {
+            type: Function,
+            default : (item, fieldName) => 
+                `<img class="hit-result-image" v-bind:src="${item.image}"/><span>${item[fieldName]}</span></li>`
+        }
+    },
     methods: {
+        up() {
+            this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+        },
+        down() {
+            this.selectedIndex = Math.min(this.selectedIndex+1, this.filtered.length);
+        },
+        complete() {
+            if (this.selectedIndex == -1) {
+                this.term = this.suggestion;
+                this.update();
+            }
+        },
+        select() {
+            const elem = this.filtered[this.selectedIndex];
+            this.selectedIndex = -1;
+            this.filtered = [];
+            this.action(elem);
+        },
         open() {
             return this.filtered.length > 0
+        },
+        openWidget() {
+            console.log("opened")
         },
         selected(index) {
             return this.selectedIndex === index;
         },
         update() {
-            this.dataProvider(this.term).then(data => this.result = data)
-            .then(() => this.filtered = this.result.filter(elem => this.comparingFunction(elem[this.fieldName], this.term)))
-            .then(() => {
-                if (this.open() && this.term !== '') {
-                    this.suggestion = this.filtered[0][this.fieldName];
-                } else {
-                    this.suggestion = "";
-                }
-            })
+            this.dataProvider(this.term)
+                .then(data => this.result = data)
+                .then(() => this.filtered = this.result.filter(elem => this.comparingFunction(elem[this.fieldName], this.term)))
+                .then(() => {
+                    if (this.open() && this.term !== '') {
+                        this.suggestion = this.filtered[0][this.fieldName];
+                    } else {
+                        this.suggestion = "";
+                    }
+                });            
         }
     },
     components: {
-        FontAwesomeIcon
+        FontAwesomeIcon, GlobalEvents
     }
 };
 </script>

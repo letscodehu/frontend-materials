@@ -4,7 +4,9 @@
     </head>
     <body>
         <div id="app">
-            <Spotlight field-name="symbol" :data-provider="dataProvider" :match-renderer="matchRenderer"/>
+            <button @click="openWidget">Open</button>
+            <button @click="closeWidget">Close</button>
+            <Spotlight field-name="symbol" :action="action" :data-provider="dataProvider" :widget-open="open" :match-renderer="renderer"/>
         </div>
     </body>
     <script src="main.js"></script>
