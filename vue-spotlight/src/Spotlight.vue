@@ -1,10 +1,10 @@
 <template>
         <div class="overlay" v-show="widgetOpen">
-        <global-events v-if="widgetOpen && open()"
-        @keyup.up="up"
-        @keyup.down="down"
-        @keyup.tab="complete"
-        @keyup.enter="select" />
+            <global-events v-if="widgetOpen && open()"
+            @keyup.up="up"
+            @keyup.down="down"
+            @keyup.tab="complete"
+            @keyup.enter="select" />
         <div class="search-bar">
         <div class="search-icon">
             <font-awesome-icon icon="search" size="2x" />
@@ -45,8 +45,8 @@ export default {
             required: true
         },
         widgetOpen : {
-            type: Boolean,
-            required: true
+            type : Boolean,
+            required : true
         },
         fieldName : {
             type: String,
@@ -73,7 +73,7 @@ export default {
             this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
         },
         down() {
-            this.selectedIndex = Math.min(this.selectedIndex+1, this.filtered.length);
+            this.selectedIndex = Math.min(this.selectedIndex + 1, this.filtered.length);
         },
         complete() {
             if (this.selectedIndex == -1) {
@@ -82,16 +82,16 @@ export default {
             }
         },
         select() {
-            const elem = this.filtered[this.selectedIndex];
-            this.selectedIndex = -1;
-            this.filtered = [];
-            this.action(elem);
+            if (this.selectedIndex > -1) {
+                const elem = this.filtered[this.selectedIndex];
+                this.selectedIndex = -1;
+                this.filtered = [];
+                this.term = "";
+                this.action(elem);
+            }
         },
         open() {
             return this.filtered.length > 0
-        },
-        openWidget() {
-            console.log("opened")
         },
         selected(index) {
             return this.selectedIndex === index;

@@ -18,12 +18,12 @@ new Vue({
                 )
         }
     },
-    methods: {
+    methods : {
         openWidget() {
-            this.open = true;
+            this.open = true
         },
         closeWidget() {
-            this.open = false;
+            this.open = false
         }
     },
     components: {

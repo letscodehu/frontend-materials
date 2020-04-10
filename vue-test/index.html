@@ -6,7 +6,7 @@
         <div id="app">
             <button @click="openWidget">Open</button>
             <button @click="closeWidget">Close</button>
-            <Spotlight field-name="symbol" :action="action" :data-provider="dataProvider" :widget-open="open" :match-renderer="renderer"/>
+            <Spotlight field-name="symbol" :data-provider="dataProvider" :widget-open="open" :action="action" :match-renderer="renderer"/>
         </div>
     </body>
     <script src="main.js"></script>
