@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "finalhandler": "^1.1.2",
+    "mysql": "^2.18.1",
     "router": "^1.3.5",
     "serve": "^11.3.2"
   }
