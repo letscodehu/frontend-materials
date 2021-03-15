@@ -7,6 +7,7 @@ let router = Router()
 const config = require('./config/app.js');
 const CreateEvent = require("./api/CreateEvent.js")
 const ListEvent = require("./api/ListEvent.js")
+const RecentEvents = require("./api/RecentEvents")
 
 const serveOptions = {
     "public": __dirname + "/assets",
@@ -21,6 +22,7 @@ router.get("/", (req, res) => {
     serve(req, res, serveOptions)
 })
 router.get("/event", ListEvent)
+router.get("/recent", RecentEvents)
 router.post("/event", CreateEvent)
 router.use("/public", (req, res) => {
     return serve(req, res, serveOptions)

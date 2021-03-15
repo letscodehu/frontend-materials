@@ -2,7 +2,7 @@ const events = require("../services/events")
 const errHandler = require("./ErrorResolver")
 const toJson = require("../services/toJson")
 function listEvent(req, res) {
-    events.list()
+    events.recentCount()
     .then(toJson(res))
     .catch(errHandler(res))
 }
