@@ -10,7 +10,7 @@
   "author": "Papp Krisztián <fejlesztes@letscode.hu> (https://www.letscode.hu/)",
   "license": "MIT",
   "dependencies": {
-    "json-server": "^0.16.1",
+    "json-server": "^0.17.1",
     "vue": "^2.6.11",
     "vue-spotlight": "file:../vue-spotlight"
   },
